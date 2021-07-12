@@ -845,6 +845,7 @@ func convertAttributes(
 		} else {
 			out.Mode |= syscall.S_IFBLK
 		}
+		out.Rdev |= mkdev(in.DeviceMajor, in.DeviceMinor)
 	case in.Mode&os.ModeNamedPipe != 0:
 		out.Mode |= syscall.S_IFIFO
 	case in.Mode&os.ModeSymlink != 0:
@@ -855,6 +856,10 @@ func convertAttributes(
 	if in.Mode&os.ModeSetuid != 0 {
 		out.Mode |= syscall.S_ISUID
 	}
+}
+
+func mkdev(maj, min uint32) uint32 {
+	return (maj << 20) | min
 }
 
 // Convert an absolute cache expiration time to a relative time from now for
